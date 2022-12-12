@@ -2,10 +2,11 @@ import React, { useState, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { auth, storage, db } from "../firebase";
-import { ref, getDownloadURL } from "firebase/storage";
+import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
 import { doc, setDoc } from "firebase/firestore";
 import { AuthContext } from "../context/AuthContext";
 import Logo from "../assets/logo.png";
+import { BsImage } from "react-icons/bs";
 
 const inputStyle = "p-2 text-sm outline-none border-b-2 border-gray-100";
 
@@ -21,31 +22,37 @@ const Register = () => {
     const displayName = e.target[0].value;
     const email = e.target[1].value;
     const password = e.target[2].value;
+    const file = e.target[3].files[0];
 
     try {
       const res = await createUserWithEmailAndPassword(auth, email, password);
-      const storageRef = ref(storage, "profile.png");
-      getDownloadURL(storageRef).then(async (downloadURL) => {
-        try {
-          await updateProfile(res.user, {
-            displayName,
-            photoURL: downloadURL,
-          });
 
-          await setDoc(doc(db, "users", res.user.uid), {
-            uid: res.user.uid,
-            displayName,
-            email,
-            photoURL: downloadURL,
-          });
+      const date = new Date().getTime();
+      const storageRef = ref(storage, `${displayName + date}`);
 
-          await setDoc(doc(db, "userChats", res.user.uid), {});
-          navigate("/");
-          setUser(auth.currentUser);
-        } catch (err) {
-          setError(true);
-          setLoading(false);
-        }
+      await uploadBytesResumable(storageRef, file).then(() => {
+        getDownloadURL(storageRef).then(async (downloadURL) => {
+          try {
+            await updateProfile(res.user, {
+              displayName,
+              photoURL: downloadURL,
+            });
+
+            await setDoc(doc(db, "users", res.user.uid), {
+              uid: res.user.uid,
+              displayName,
+              email,
+              photoURL: downloadURL,
+            });
+
+            await setDoc(doc(db, "userChats", res.user.uid), {});
+            navigate("/");
+            setUser(auth.currentUser);
+          } catch (err) {
+            setError(true);
+            setLoading(false);
+          }
+        });
       });
     } catch (err) {
       setError(true);
@@ -65,6 +72,11 @@ const Register = () => {
             type="password"
             placeholder="비밀번호"
           />
+          <input className="hidden" type="file" id="file" />
+          <label htmlFor="file" className="mt-3 flex gap-2 cursor-pointer">
+            <BsImage fontSize={20} />
+            <span>프로필 이미지 추가</span>
+          </label>
           <button className="bg-secondary mt-5 text-white py-2">
             가입하기
           </button>

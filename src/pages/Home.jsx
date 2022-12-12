@@ -1,5 +1,4 @@
 import React, { useState, useContext, useEffect } from "react";
-import { Link } from "react-router-dom";
 import { BsPersonPlus } from "react-icons/bs";
 import { Friend, Navbar, User, Search } from "../components";
 import { AuthContext } from "../context/AuthContext";
@@ -38,9 +37,8 @@ const Home = () => {
         </div>
       </div>
       <div className="flex flex-col pt-[80px] pb-[50px]">
-        <Link to="/user">
-          <User />
-        </Link>
+        <User />
+
         <p className="px-4 pt-4 pb-2 text-sm text-gray-500">친구</p>
         {Object.entries(friends).map((friend) => (
           <Friend

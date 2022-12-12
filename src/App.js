@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { Home, Login, Register, Chats, Chat, UserDetail } from "./pages";
+import { Home, Login, Register, Chats, Chat } from "./pages";
 import { AuthContext } from "./context/AuthContext";
 
 function App() {
@@ -29,7 +29,6 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/chats" element={<Chats />} />
         <Route path="/chat" element={<Chat />} />
-        <Route path="/user" element={<UserDetail />} />
       </Routes>
     </BrowserRouter>
   );
