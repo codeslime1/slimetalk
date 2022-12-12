@@ -107,7 +107,9 @@ const Search = ({ setIsActive }) => {
             </button>
           </div>
           {error && (
-            <p className="py-1 text-sm text-red-500">친구를 찾지 못했습니다!</p>
+            <p className="py-1 text-sm text-red-500">
+              친구를 찾지 못했습니다!!
+            </p>
           )}
           {friend && (
             <div className="mt-4 p-2 flex items-center gap-3 border-2 border-secondary">
